@@ -495,7 +495,3 @@ This project demonstrates:
 - Lightweight telemetry data engineering.
 - Streamlit dashboarding.
 - Testing and repo hygiene.
-
-A simple way to describe it:
-
-> I built an end-to-end predictive maintenance platform using NASA C-MAPSS turbofan data. The system predicts engine Remaining Useful Life, calibrates uncertainty intervals, flags anomalous telemetry, and presents fleet-level maintenance risk through a Streamlit dashboard.
