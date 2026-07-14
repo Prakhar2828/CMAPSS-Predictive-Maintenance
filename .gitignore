@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Generated model/data outputs can be regenerated
+project1_ml/reports/
+project1_ml/processed/*.parquet
+project2_telemetry/cleaned_telemetry.csv
+project2_telemetry/model_predictions.csv
+project2_telemetry/model_metrics.csv
+project2_telemetry/feature_importance_top20.csv
+
+# Optional local screenshots
+assets/*.png
