@@ -67,3 +67,23 @@ def test_model_features_do_not_depend_on_future_cycles():
     full = add_degradation_features(unit)
     partial = add_degradation_features(unit.iloc[:10])
     pd.testing.assert_frame_equal(full.loc[:9, features], partial[features])
+
+
+def test_public_replay_matches_simulation_and_reported_metrics():
+    import json
+    import math
+
+    snapshot = json.loads((ROOT / "docs/fleet.json").read_text())
+    raw = pd.read_csv(ROOT / "data/test_FD001.txt", sep=r"\s+", header=None)
+    lengths = raw.groupby(0).size().to_dict()
+    assert set(map(int, snapshot["engines"])) == set(lengths)
+    errors, covered = [], []
+    for engine, rows in snapshot["engines"].items():
+        trace = pd.DataFrame(rows, columns=snapshot["columns"])
+        assert trace.cycle.tolist() == list(range(1, lengths[int(engine)] + 1))
+        assert trace.predicted_RUL.between(trace.lower_RUL, trace.upper_RUL).all()
+        last = trace.iloc[-1]
+        errors.append(abs(last.RUL - last.predicted_RUL))
+        covered.append(last.lower_RUL <= last.RUL <= last.upper_RUL)
+    assert math.isclose(snapshot["mae"], sum(errors) / len(errors), abs_tol=0.0001)
+    assert math.isclose(snapshot["coverage"], 100 * sum(covered) / len(covered))

@@ -1,12 +1,12 @@
 # Turbofan diagnostics — a personal predictive maintenance project
 
-Built by **Prakhar Pandey** using NASA’s publicly available C-MAPSS FD001 simulation data. This is not a NASA application. The project is independent of NASA and has no NASA endorsement.
+Built by **Prakhar Pandey** using NASA’s publicly available C-MAPSS FD001 simulation data.
 
 The demo explores how teams at NASA and elsewhere in aerospace could use estimates of remaining engine life and their uncertainty to prioritize inspections. All engines and maintenance scenarios shown here are simulated.
 
 **[Open the interactive fleet monitor](https://prakhar2828.github.io/CMAPSS-Predictive-Maintenance/)**
 
-Select a test engine, replay its observed cycles, and compare predicted remaining life with the NASA test label and calibrated interval. Filter by inspection priority or switch sensors to investigate flagged readings. The demo runs in the browser using a snapshot of the offline pipeline. No account, API key, or installation is required.
+Select a test engine, replay its observed cycles, and compare predicted remaining life with the NASA test label and calibrated interval. Filter by inspection priority or jump directly to a flagged cycle to investigate its sensor readings. The demo runs in the browser using a snapshot of the offline pipeline. No account, API key, or installation is required.
 
 An end-to-end predictive maintenance project for turbofan engines using the NASA C-MAPSS FD001 dataset. The system predicts **Remaining Useful Life (RUL)**, quantifies uncertainty around each prediction, flags telemetry anomalies, and exposes the results through a Streamlit operations dashboard.
 

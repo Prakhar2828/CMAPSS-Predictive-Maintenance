@@ -132,10 +132,10 @@ def build_sensor_figure(unit_telemetry: pd.DataFrame, sensor: str) -> go.Figure:
 
 
 st.title("Turbofan diagnostics")
-st.markdown("**An independent personal project by Prakhar Pandey. This is not a NASA application.**")
+st.markdown("**An independent personal project by Prakhar Pandey.**")
 st.caption(
     "Using NASA’s public C-MAPSS simulation data, this demo explores how aerospace teams could "
-    "prioritize engine inspections. The project has no NASA affiliation or endorsement."
+    "prioritize engine inspections."
 )
 
 try:
@@ -155,7 +155,7 @@ try:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Current cycle", f"{int(latest['cycle'])}")
     c2.metric("Predicted RUL", f"{latest['predicted_RUL']:.1f}")
-    c3.metric("Lower confidence bound", f"{latest['lower_RUL']:.1f}")
+    c3.metric("Lower prediction bound", f"{latest['lower_RUL']:.1f}")
     c4.metric("Risk status", risk_badge(str(latest["risk_level"])))
 
     st.info(str(latest["maintenance_recommendation"]))
@@ -207,7 +207,7 @@ try:
         st.warning("No model_metrics.csv found. Run project1_ml/train_uq.py first.")
 
     if not feature_importance_df.empty:
-        st.subheader("Top XGBoost Feature Importances")
+        st.subheader("Top ensemble feature importances")
         st.bar_chart(feature_importance_df.set_index("feature")["importance"])
 
     with st.expander("Latest telemetry rows for selected engine"):

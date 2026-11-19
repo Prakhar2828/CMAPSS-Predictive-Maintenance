@@ -53,6 +53,13 @@ function render() {
   const key = el("sensor").value;
   const values = rows.map(item => item[key]);
   chart("trace", rows, visible, [[key,"#87c7f3","none"]], [Math.min(...values),Math.max(...values)], false, "Selected sensor readings through cycle " + row.cycle);
+  const nextFlag = rows.find(item => item.cycle > row.cycle && item.anomaly_reason !== "normal");
+  const targetFlag = nextFlag || rows.find(item => item.cycle !== row.cycle && item.anomaly_reason !== "normal");
+  const eventButton = el("event");
+  eventButton.disabled = !targetFlag;
+  eventButton.textContent = targetFlag ? "Review flagged cycle " + targetFlag.cycle :
+    (row.anomaly_reason === "normal" ? "No flags on this engine" : "Only flagged cycle");
+  eventButton.value = targetFlag ? targetFlag.cycle : "";
   el("flag").textContent = key.toUpperCase() + " reading " + row[key] + " · " +
     (row.anomaly_reason === "normal" ? "No sensor flag this cycle" : "Sensor flag · " + row.anomaly_reason);
 }
@@ -92,7 +99,7 @@ async function start() {
   const data = await response.json();
   fleet = Object.fromEntries(Object.entries(data.engines).map(([id, rows]) => [id,
     rows.map(row => Object.fromEntries(data.columns.map((name,i) => [name,row[i]])))]));
-  ordered = Object.keys(fleet).sort((a,b) => fleet[a].at(-1).lower_RUL - fleet[b].at(-1).lower_RUL || Number(a)-Number(b));
+  ordered = Object.keys(fleet).sort((a,b) => fleet[a].at(-1).lower_RUL - fleet[b].at(-1).lower_RUL || fleet[a].at(-1).predicted_RUL - fleet[b].at(-1).predicted_RUL || Number(a)-Number(b));
   const counts = ["High","Medium","Low"].map(level => ordered.filter(id => fleet[id].at(-1).risk_level === level).length);
   el("stats").innerHTML = [["Test engines",ordered.length],["High priority",counts[0]],["Medium priority",counts[1]],["Low priority",counts[2]]]
     .map(([label,count]) => '<div><label>'+label+'</label><strong>'+count+'</strong></div>').join("");
@@ -100,6 +107,11 @@ async function start() {
   el("evaluation").textContent = "At the final observed cycle per engine, mean absolute error was " + format(data.mae) + " cycles and interval coverage was " + format(data.coverage) + "%.";
   el("filter").onchange = updateRoster;
   el("sensor").onchange = render;
+  el("event").onclick = () => {
+    stopReplay();
+    el("cycle").value = el("event").value;
+    render();
+  };
   el("cycle").oninput = () => { stopReplay(); render(); };
   el("play").onclick = () => {
     if (timer) return stopReplay();
