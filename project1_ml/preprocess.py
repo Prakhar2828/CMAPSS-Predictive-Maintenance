@@ -69,11 +69,8 @@ def add_test_rul(df: pd.DataFrame, rul_path: Path, rul_cap: int = RUL_CAP) -> pd
 
 
 def add_degradation_features(df: pd.DataFrame, window_size: int = ROLLING_WINDOW) -> pd.DataFrame:
-    """Create rolling, lag, delta, and normalized cycle features per engine."""
+    """Create trailing sensor statistics and cycle-to-cycle changes per engine."""
     df = df.copy().sort_values(["unit_id", "cycle"]).reset_index(drop=True)
-
-    max_cycles = df.groupby("unit_id")["cycle"].transform("max")
-    df["cycle_norm"] = df["cycle"] / max_cycles
 
     feature_sensors = [sensor for sensor in SENSOR_COLS if sensor not in LOW_INFORMATION_SENSORS]
 

@@ -28,3 +28,7 @@ clean:
 	rm -f project2_telemetry/model_predictions.csv
 	rm -f project2_telemetry/model_metrics.csv
 	rm -f project2_telemetry/feature_importance_top20.csv
+
+.PHONY: demo
+demo: preprocess train telemetry
+	python scripts/export_demo.py

@@ -27,7 +27,7 @@ RUL_CAP = 125
 N_ENSEMBLE_MODELS = 3
 ALPHA = 0.10
 CALIBRATION_FRACTION = 0.20
-DROP_COLS = ["unit_id", "cycle", "RUL", "RUL_raw"]
+DROP_COLS = ["unit_id", "cycle_norm", "RUL", "RUL_raw"]
 ENABLE_XGBOOST = os.getenv("ENABLE_XGBOOST", "0") == "1"
 
 

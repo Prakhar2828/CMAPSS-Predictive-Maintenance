@@ -52,3 +52,18 @@ def test_metrics_file_contains_final_cycle_evaluation():
     metrics = pd.read_csv(metrics_path)
     assert "final_cycle_per_engine" in set(metrics["evaluation_scope"])
     assert "timeline_all_cycles" in set(metrics["evaluation_scope"])
+
+
+def test_model_features_do_not_depend_on_future_cycles():
+    import sys
+    sys.path.insert(0, str(ROOT / "project1_ml"))
+    from preprocess import add_degradation_features
+    from train_uq import feature_columns
+
+    prefix = pd.read_parquet(ROOT / "project1_ml/processed/test_processed.parquet")
+    unit = prefix[prefix.unit_id == 1]
+    features = feature_columns(unit)
+    assert "cycle" in features and "cycle_norm" not in features
+    full = add_degradation_features(unit)
+    partial = add_degradation_features(unit.iloc[:10])
+    pd.testing.assert_frame_equal(full.loc[:9, features], partial[features])

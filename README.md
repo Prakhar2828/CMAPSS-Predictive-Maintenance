@@ -1,5 +1,9 @@
 # NASA C-MAPSS Predictive Maintenance Platform
 
+**[Open the interactive fleet monitor](https://prakhar2828.github.io/CMAPSS-Predictive-Maintenance/)**
+
+Select a test engine, replay its observed cycles, and compare predicted remaining life with the NASA test label and calibrated interval. Filter by inspection priority or switch sensors to investigate flagged readings. The demo runs in the browser using a snapshot of the offline pipeline. No account, API key, or installation is required.
+
 An end-to-end predictive maintenance project for turbofan engines using the NASA C-MAPSS FD001 dataset. The system predicts **Remaining Useful Life (RUL)**, quantifies uncertainty around each prediction, flags telemetry anomalies, and exposes the results through a Streamlit operations dashboard.
 
 This project is designed as a portfolio-quality ML systems project, not just a notebook. It separates the heavy model-training workflow from the lightweight operational telemetry/dashboard workflow.
@@ -158,7 +162,7 @@ It does the following:
   - rolling means,
   - rolling standard deviations,
   - one-cycle deltas,
-  - normalized cycle progress.
+  - elapsed cycles, available at prediction time.
 - Drops low-information raw sensors for FD001.
 - Saves optimized parquet files.
 
@@ -475,9 +479,7 @@ Good future upgrades:
 3. Add SHAP explanations for model interpretability.
 4. Add critical-window metrics for engines with RUL below 30 or 50.
 5. Add Docker support.
-6. Deploy the dashboard to Streamlit Community Cloud.
-7. Add a model registry folder or MLflow experiment tracking.
-8. Add a better synthetic streaming mode that reveals cycles over time.
+6. Add a model registry folder or MLflow experiment tracking.
 
 ---
 
@@ -495,3 +497,7 @@ This project demonstrates:
 - Lightweight telemetry data engineering.
 - Streamlit dashboarding.
 - Testing and repo hygiene.
+
+## Refresh the public demo
+
+After installing the project requirements, run `make demo` to rebuild the FD001 predictions, telemetry and `docs/fleet.json`. Commit the refreshed snapshot. GitHub Pages serves the `docs/` directory on `main` using the free public-repository hosting option. To preview locally, run `python -m http.server --directory docs 8000` and visit `http://localhost:8000`. The Streamlit interface remains available with `make app`.
