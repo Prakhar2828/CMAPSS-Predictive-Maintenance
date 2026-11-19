@@ -12,24 +12,30 @@ function stopReplay() {
 
 // Use the full observation window for the time axis so it stays fixed during replay.
 function chart(target, rows, visible, series, range, band, title) {
-  const width = 720, height = band ? 164 : 112;
+  const width = Math.max(285, Math.round(el(target).getBoundingClientRect().width)), height = band ? 178 : 130;
   const left = 48, right = width - 12, bottom = height - 23;
   const x = i => left + i / Math.max(1, rows.length - 1) * (right - left);
   const y = value => bottom - (value - range[0]) / (range[1] - range[0] || 1) * (bottom - 12);
   const points = key => visible.map((row, i) => x(i).toFixed(1) + "," + y(row[key]).toFixed(1));
   const markup = [];
+  const divisions = width < 480 ? 4 : 8;
+  for (let tick = 0; tick <= divisions; tick++) {
+    const i = Math.round(tick * (rows.length - 1) / divisions);
+    markup.push('<path stroke="#39454d" stroke-dasharray="2 4" d="M'+x(i)+' 12V'+bottom+'"/>');
+    if (tick > 0 && tick < divisions) markup.push('<text x="'+x(i)+'" y="'+(height-3)+'" text-anchor="middle">'+rows[i].cycle+'</text>');
+  }
   for (const value of [range[0], (range[0] + range[1]) / 2, range[1]]) {
-    markup.push('<path stroke="#dce7e4" d="M'+left+' '+y(value)+'H'+right+'"/>',
+    markup.push('<path stroke="#45515a" d="M'+left+' '+y(value)+'H'+right+'"/>',
       '<text x="40" y="'+(y(value)+4)+'" text-anchor="end">'+Number(value.toFixed(1))+'</text>');
   }
-  if (band) markup.push('<polygon fill="#b5e4d3" points="'+points("upper_RUL").concat(points("lower_RUL").reverse()).join(" ")+'"/>');
+  if (band) markup.push('<polygon fill="#614b3b" points="'+points("upper_RUL").concat(points("lower_RUL").reverse()).join(" ")+'"/>');
   for (const [key, color, dash] of series) {
     const coords = points(key).join(" ");
     markup.push('<polyline fill="none" stroke="'+color+'" stroke-width="2.5" stroke-dasharray="'+dash+'" points="'+coords+'"/>');
     markup.push('<circle fill="'+color+'" cx="'+x(visible.length-1)+'" cy="'+y(visible.at(-1)[key])+'" r="3"/>');
   }
-  markup.push('<text x="'+left+'" y="'+(height-3)+'">1</text><text text-anchor="end" x="'+right+'" y="'+(height-3)+'">Cycle '+rows.at(-1).cycle+'</text>');
-  el(target).innerHTML='<svg viewBox="0 0 '+width+' '+height+'" role="img" aria-label="'+title+'" font-family="system-ui" font-size="14" fill="#476367">'+markup.join("")+'</svg>';
+  markup.push('<text x="'+left+'" y="'+(height-3)+'">1</text><text text-anchor="end" x="'+right+'" y="'+(height-3)+'">'+rows.at(-1).cycle+'</text>');
+  el(target).innerHTML='<svg viewBox="0 0 '+width+' '+height+'" role="img" aria-label="'+title+'" font-family="monospace" font-size="12" fill="#ced7dc">'+markup.join("")+'</svg>';
 }
 
 function render() {
@@ -43,10 +49,10 @@ function render() {
   el("estimate").textContent = format(row.predicted_RUL);
   el("bounds").textContent = format(row.lower_RUL) + "–" + format(row.upper_RUL);
   el("actual").textContent = row.RUL;
-  chart("rul", rows, visible, [["RUL","#875e39","6 4"],["predicted_RUL","#006a64","none"]], [0,125], true, "Predicted and actual remaining life with calibrated interval");
+  chart("rul", rows, visible, [["RUL","#c4d0d9","6 4"],["predicted_RUL","#ffaa63","none"]], [0,125], true, "Predicted and actual remaining life with calibrated interval");
   const key = el("sensor").value;
   const values = rows.map(item => item[key]);
-  chart("trace", rows, visible, [[key,"#326885","none"]], [Math.min(...values),Math.max(...values)], false, "Selected sensor readings through cycle " + row.cycle);
+  chart("trace", rows, visible, [[key,"#87c7f3","none"]], [Math.min(...values),Math.max(...values)], false, "Selected sensor readings through cycle " + row.cycle);
   el("flag").textContent = key.toUpperCase() + " reading " + row[key] + " · " +
     (row.anomaly_reason === "normal" ? "No sensor flag this cycle" : "Sensor flag · " + row.anomaly_reason);
 }
@@ -68,7 +74,11 @@ function updateRoster() {
     button.textContent = engineName(id);
     const priority = document.createElement("small");
     priority.textContent = fleet[id].at(-1).risk_level;
-    button.append(priority);
+    const life = document.createElement("span");
+    life.className = "queue-life";
+    life.textContent = format(fleet[id].at(-1).predicted_RUL);
+    priority.dataset.risk = fleet[id].at(-1).risk_level;
+    button.append(life, priority);
     button.onclick = () => selectEngine(id);
     return button;
   });
@@ -103,8 +113,9 @@ async function start() {
       if (slider.value === slider.max) stopReplay();
     }, 140);
   };
-  updateRoster();
   el("status").hidden = true;
   el("monitor").hidden = false;
+  updateRoster();
+  new ResizeObserver(render).observe(el("rul"));
 }
 start().catch(() => { el("status").textContent = "Engine data could not load. Refresh the page to try again."; });
