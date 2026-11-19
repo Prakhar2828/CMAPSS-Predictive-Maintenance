@@ -8,7 +8,7 @@ import streamlit as st
 
 APP_DIR = Path(__file__).resolve().parent
 
-st.set_page_config(page_title="C-MAPSS Predictive Maintenance Hub", layout="wide")
+st.set_page_config(page_title="Turbofan diagnostics · Prakhar Pandey", layout="wide")
 
 
 @st.cache_data
@@ -131,9 +131,11 @@ def build_sensor_figure(unit_telemetry: pd.DataFrame, sensor: str) -> go.Figure:
     return fig
 
 
-st.title("🛰️ C-MAPSS Predictive Maintenance Operations Hub")
+st.title("Turbofan diagnostics")
+st.markdown("**An independent personal project by Prakhar Pandey. This is not a NASA application.**")
 st.caption(
-    "End-to-end NASA FD001 turbofan RUL prediction with calibrated uncertainty, anomaly monitoring, and fleet-level risk triage."
+    "Using NASA’s public C-MAPSS simulation data, this demo explores how aerospace teams could "
+    "prioritize engine inspections. The project has no NASA affiliation or endorsement."
 )
 
 try:

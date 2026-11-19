@@ -1,4 +1,8 @@
-# NASA C-MAPSS Predictive Maintenance Platform
+# Turbofan diagnostics — a personal predictive maintenance project
+
+Built by **Prakhar Pandey** using NASA’s publicly available C-MAPSS FD001 simulation data. This is not a NASA application. The project is independent of NASA and has no NASA endorsement.
+
+The demo explores how teams at NASA and elsewhere in aerospace could use estimates of remaining engine life and their uncertainty to prioritize inspections. All engines and maintenance scenarios shown here are simulated.
 
 **[Open the interactive fleet monitor](https://prakhar2828.github.io/CMAPSS-Predictive-Maintenance/)**
 
